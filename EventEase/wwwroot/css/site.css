@@ -17,9 +17,59 @@ html {
   min-height: 100%;
 }
 
+
 body {
-  margin-bottom: 60px;
+    background-image: url('../images/home background.png');
+    background-size:cover; /* Ensures it fills the screen */
+    background-position: center; /* Centers the image */
+     
 }
+
+.bodyText {
+    height: 100vh;
+    position: relative;
+    display: flex;
+    color: white;
+}
+
+/* dark overlay */
+.overlay {
+    position:center;
+    top: 0;
+    left: 0;
+    width: 50%;
+    height: 50%;
+    background-color: rgba(0, 0, 0, 0.5); /* 0.5 = 50% opacity */
+    z-index: 1;
+}
+
+.overlayText-top {
+    text-align: center;
+}
+
+.overlayText-bottom {
+    text-align: center;
+    
+}
+
+    .overlay-text h1 {
+        font-size: 4rem;
+        font-stretch: semi-expanded ; 
+        font-family:'Lucida Calligraphy';
+        margin: 0;
+        text-shadow: 2px 2px 5px rgba(0,0,0,0.7);
+    }
+
+    .overlay-text h2 {
+        font-size: 1.5rem;
+        margin-top: 10px;
+        text-shadow: 1px 1px 3px rgba(0,0,0,0.7);
+    }
+
+
+
+
+
 
 .form-floating > .form-control-plaintext::placeholder, .form-floating > .form-control::placeholder {
   color: var(--bs-secondary-color);
