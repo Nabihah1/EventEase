@@ -17,55 +17,25 @@ html {
   min-height: 100%;
 }
 
-
-body {
+.home-background {
     background-image: url('../images/home background.png');
-    background-size:cover; /* Ensures it fills the screen */
-    background-position: center; /* Centers the image */
-     
-}
-
-.bodyText {
-    height: 100vh;
-    position: relative;
+    background-size: cover;
+    background-position: center;
+    height: 100vh; /* Full screen height */
     display: flex;
-    color: white;
+    justify-content: center;
+    align-items: center;
+
 }
 
-/* dark overlay */
-.overlay {
-    position:center;
-    top: 0;
-    left: 0;
-    width: 50%;
-    height: 50%;
-    background-color: rgba(0, 0, 0, 0.5); /* 0.5 = 50% opacity */
-    z-index: 1;
-}
-
-.overlayText-top {
-    text-align: center;
-}
-
-.overlayText-bottom {
-    text-align: center;
-    
-}
-
-    .overlay-text h1 {
-        font-size: 4rem;
-        font-stretch: semi-expanded ; 
-        font-family:'Lucida Calligraphy';
-        margin: 0;
-        text-shadow: 2px 2px 5px rgba(0,0,0,0.7);
+.home-text{
+    text-align:center;
+    color: black;
     }
 
-    .overlay-text h2 {
-        font-size: 1.5rem;
-        margin-top: 10px;
-        text-shadow: 1px 1px 3px rgba(0,0,0,0.7);
-    }
-
+h1{
+    font-family:'Lucida Calligraphy',sans-serif;
+}
 
 
 
