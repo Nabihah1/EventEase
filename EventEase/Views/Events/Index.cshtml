@@ -52,9 +52,17 @@
                 @Html.DisplayFor(modelItem => item.EventDescription)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.EventImage)
-                    <img src="https://picsum.photos/150/150" alt="Placeholder image" />
-            </td>
+               
+                    @if (!string.IsNullOrEmpty(item.EventImage))
+                    {
+                        <a href="@item.EventImage" target="_blank">@System.IO.Path.GetFileName(item.EventImage)</a>
+                    }
+                    else
+                    {
+                        <span class="text-muted">No image</span>
+                    }
+
+                   </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.EventID">Edit</a> |
                 <a asp-action="Details" asp-route-id="@item.EventID">Details</a> |

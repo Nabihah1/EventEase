@@ -7,16 +7,20 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using EventEase.Data;
 using EventEase.Models;
+using EventEase.Services;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace EventEase.Controllers
 {
     public class EventsController : Controller
     {
         private readonly EventEaseContext _context;
+        private readonly IBlobService _blobService; 
 
-        public EventsController(EventEaseContext context)
+        public EventsController(EventEaseContext context, IBlobService blobService)
         {
             _context = context;
+            _blobService = blobService ;
         }
 
         // GET: Events
@@ -54,16 +58,26 @@ namespace EventEase.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("EventID,EventName,EventDate,StartTime,EndTime,EventDescription,EventImage")] Event @event)
+        public async Task<IActionResult> Create([Bind("EventID,EventName,EventDate,StartTime,EndTime,EventDescription,EventImage")] Event @event,IFormFile image)
         {
             if (ModelState.IsValid)
             {
+
+                if (image is { Length: > 0 })
+                {
+                    var url = await _blobService.UploadFileAsync(image.OpenReadStream(),
+                                                          Path.GetRandomFileName() + Path.GetExtension(image.FileName),
+                                                          image.ContentType);
+                    @event.EventImage = url;
+                }
                 _context.Add(@event);
-                await _context.SaveChangesAsync();
+                await _context.SaveChangesAsync(); 
                 return RedirectToAction(nameof(Index));
             }
-            return View(@event);
-        }
+               
+                return View(@event);
+            }
+        
 
         // GET: Events/Edit/5
         public async Task<IActionResult> Edit(int? id)

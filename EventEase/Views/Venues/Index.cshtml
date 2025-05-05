@@ -41,8 +41,15 @@
                 @Html.DisplayFor(modelItem => item.VenueCapacity)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.VenueImage)
-                    <img src="https://picsum.photos/150/150" alt="Placeholder image" />
+                    @if (!string.IsNullOrEmpty(item.VenueImage))
+                    {
+                        <a href="@item.VenueImage" target="_blank">@System.IO.Path.GetFileName(item.VenueImage)</a>
+                    }
+                    else
+                    {
+                        <span class="text-muted">No image</span>
+                    }
+                   
             </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.VenueID">Edit</a> |

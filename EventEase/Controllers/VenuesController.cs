@@ -7,16 +7,20 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using EventEase.Data;
 using EventEase.Models;
+using EventEase.Services;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace EventEase.Controllers
 {
     public class VenuesController : Controller
     {
         private readonly EventEaseContext _context;
+        private readonly IBlobService _blobService;
 
-        public VenuesController(EventEaseContext context)
+        public VenuesController(EventEaseContext context, IBlobService blobService)
         {
             _context = context;
+            _blobService = blobService;
         }
 
         // GET: Venues
@@ -54,14 +58,24 @@ namespace EventEase.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("VenueID,VenueName,VenueLocation,VenueCapacity,VenueImage")] Venue venue)
+        public async Task<IActionResult> Create([Bind("VenueID,VenueName,VenueLocation,VenueCapacity,VenueImage")] Venue venue, IFormFile image)
         {
+
             if (ModelState.IsValid)
             {
+
+                if (image is { Length: > 0 })
+                {
+                    var url = await _blobService.UploadFileAsync(image.OpenReadStream(),
+                                                          Path.GetRandomFileName() + Path.GetExtension(image.FileName),
+                                                          image.ContentType);
+                    venue.VenueImage = url;
+                }
                 _context.Add(venue);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
+
             return View(venue);
         }
 

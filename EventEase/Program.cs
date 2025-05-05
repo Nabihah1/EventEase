@@ -1,8 +1,17 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using EventEase.Data;
+using EventEase.Services;
 
 var builder = WebApplication.CreateBuilder(args);
+
+//register the blob service 
+builder.Services.AddScoped<IBlobService, BlobService>();
+
+//add services to the container 
+builder.Services.AddControllersWithViews(); 
+
+
 builder.Services.AddDbContext<EventEaseContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("EventEaseContext") ?? throw new InvalidOperationException("Connection string 'EventEaseContext' not found.")));
 
