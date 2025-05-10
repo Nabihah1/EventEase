@@ -42,4 +42,14 @@
         <input type="submit" value="Delete" class="btn btn-danger" /> |
         <a asp-action="Index">Back to List</a>
     </form>
+
+
+    @if (!ViewData.ModelState.IsValid)
+    {
+        <div class="text-danger">
+            <strong>@Html.ValidationSummary()</strong>
+        </div>
+    }
+
+
 </div>

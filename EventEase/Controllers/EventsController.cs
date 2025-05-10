@@ -9,6 +9,7 @@ using EventEase.Data;
 using EventEase.Models;
 using EventEase.Services;
 using static System.Net.Mime.MediaTypeNames;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace EventEase.Controllers
 {
@@ -167,14 +168,25 @@ namespace EventEase.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var @event = await _context.Event.FindAsync(id);
-            if (@event != null)
+            //check if any booking exists for an event
+            bool hasBooking = _context.Event.Any(b => b.EventID == id);
+  
+            if (hasBooking)
             {
-                _context.Event.Remove(@event);
+                //retrieve the EventID to re-display the Delete view with error 
+                var eventToDelete = await _context.Event.FindAsync(id);
+                ModelState.AddModelError("", "This event cannot be deleted.\nThere is an existing booking record for this event!");
+             return View(eventToDelete);
             }
 
-            await _context.SaveChangesAsync();
+            var eventToActuallyDelete = await _context.Event.FindAsync(id);
+            if (eventToActuallyDelete != null)
+            {
+                _context.Event.Remove(eventToActuallyDelete);
+                await _context.SaveChangesAsync();
+            }
             return RedirectToAction(nameof(Index));
+
         }
 
         private bool EventExists(int id)
