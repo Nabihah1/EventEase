@@ -11,6 +11,11 @@ namespace EventEase.Models
         [DataType(DataType.Text)]
         public int EventID { get; set; }
 
+        //foreign key 
+        //[Display(Name = "Venue ID")]
+        //[DataType(DataType.Text)]
+        //public int VenueID { get; set; }
+
 
 
         [Display(Name = "Name of Event")]
@@ -55,5 +60,6 @@ namespace EventEase.Models
 
         //navigation properties
         public List<Booking>? Bookings { get; set; }
+        //public Venue? Venue { get; set; }
     }
 }

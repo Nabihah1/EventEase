@@ -48,9 +48,23 @@ namespace EventEase.Controllers
         }
 
         // GET: Events/Create
-        public IActionResult Create()
+        public IActionResult Create(Event AnotherEvent, Venue AnotherVenue)
         {
-            return View();
+            // Check if another event is already booked at the same venue and time
+            bool isVenueBooked = _context.Event.Any(e =>
+                e.EventDate == AnotherEvent.EventDate &&
+                e.StartTime < AnotherEvent.StartTime &&
+                e.EndTime > AnotherEvent.EndTime);
+
+            bool isVenueBooked1 = _context.Venue.Any(v =>
+            v.VenueID == AnotherVenue.VenueID);
+
+            if (isVenueBooked && isVenueBooked1)
+            {
+                ModelState.AddModelError("", "This venue is already booked at the selected date and time.\nPlease select another venue or time.");
+               return View(AnotherEvent);
+            }
+            return View(AnotherEvent);
         }
 
         // POST: Events/Create

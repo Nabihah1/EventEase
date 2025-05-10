@@ -17,14 +17,65 @@ namespace EventEase.Controllers
         public BookingsController(EventEaseContext context)
         {
             _context = context;
+
         }
 
+          
+
         // GET: Bookings
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int? BookingsID,string searchString)
         {
-            var eventEaseContext = _context.Booking.Include(b => b.Event).Include(b => b.Venue);
-            return View(await eventEaseContext.ToListAsync());
+            if (_context.Booking == null)
+            {
+                return Problem("Entity set 'EventEase.Context.Booking'  is null.");
+            }
+
+                      
+            // Include Venue name 
+            var bookings = _context.Booking
+                .Include(b => b.Event)
+                .Include (b => b.Venue)
+                .AsQueryable();
+
+           
+            //filter by event name or bookingID 
+            if (!String.IsNullOrEmpty(searchString))
+            {
+                bookings = bookings.Where(b =>
+                b.Event != null && b.Event.EventName.Contains(searchString) ||
+                  b.BookingID.ToString().Contains(searchString));
+            }
+
+         
+
+            // Go to BookingViewModel
+            var bookingViewModels = await bookings
+                .Select(b => new BookingViewModel
+                {
+                    BookingID = b.BookingID,
+                    BookingDate = b.BookingDate,
+                    EventName = b.Event.EventName,
+                    EventDescription = b.Event.EventDescription,
+                    StartTime = b.Event.StartTime,
+                    EndTime = b.Event.EndTime,
+                    VenueName = b.Venue.VenueName,
+                    VenueLocation = b.Venue.VenueLocation,
+
+                   
+                }).ToListAsync();
+
+
+            return View(bookingViewModels);
+                        
         }
+
+
+        [HttpPost]
+        public string Index(string searchString, bool notUsed)
+        {
+            return "From [HttpPost]Index: filter on " + searchString;
+        }
+
 
         // GET: Bookings/Details/5
         public async Task<IActionResult> Details(int? id)

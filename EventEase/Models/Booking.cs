@@ -16,13 +16,14 @@ namespace EventEase.Models
         [DataType(DataType.Text)]
         public int EventID { get; set; }
 
-
+       
 
         [Display(Name = "Venue ID")]
         [DataType(DataType.Text)]
         public int VenueID { get; set; }
 
 
+        
 
         [Display(Name = "Date of Booking")]
         [DataType(DataType.DateTime)]
