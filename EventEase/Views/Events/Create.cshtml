@@ -42,7 +42,24 @@
                 <input type="file" name="image" class="form-control" />
                 <span asp-validation-for="EventImage" class="text-danger"></span>
 
+                <!-- allow users to choose an venue from the database -->
+                <label asp-for="VenueID" class="control-label"></label>
+                <select asp-for="VenueID" class="form-control">
+                    <option value="">Select Venue</option>
+                    @foreach (var venue in ViewBag.Venues)
+                    {
+                        <option value="@venue.VenueID">@venue.VenueName</option>
+                    }
+                </select>
+                <span asp-validation-for="VenueID" class="text-danger"></span>
+
                </div>
+
+            <!-- Hidden input for VenueID -->
+            <input type="hidden" name="venueID" value="@ViewBag.VenueID" />
+
+
+
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
             </div>

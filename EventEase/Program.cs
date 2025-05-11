@@ -2,6 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using EventEase.Data;
 using EventEase.Services;
+using EventEase.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -42,3 +43,7 @@ app.MapControllerRoute(
 
 
 app.Run();
+
+
+
+

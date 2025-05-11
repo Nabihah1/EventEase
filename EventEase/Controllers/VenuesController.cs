@@ -153,22 +153,21 @@ namespace EventEase.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            //check if any booking exists for a venue
+            //check if any booking exists for an venue
             bool hasBooking = _context.Venue.Any(b => b.VenueID == id);
-
 
             if (hasBooking)
             {
-                //retrieve the VenueD to re-display the Delete view with error 
-                var venueToDelete = await _context.Event.FindAsync(id);
+                //retrieve the VenueID to re-display the Delete view with error 
+                var venueToDelete = await _context.Venue.FindAsync(id);
                 ModelState.AddModelError("", "This venue cannot be deleted.\nThere is an existing booking record for this event!");
                 return View(venueToDelete);
             }
 
-            var venueToActuallyDelete = await _context.Event.FindAsync(id);
+            var venueToActuallyDelete = await _context.Venue.FindAsync(id);
             if (venueToActuallyDelete != null)
             {
-                _context.Event.Remove(venueToActuallyDelete);
+                _context.Venue.Remove(venueToActuallyDelete);
                 await _context.SaveChangesAsync();
             }
             return RedirectToAction(nameof(Index));

@@ -43,7 +43,7 @@ namespace EventEase.Models
 
         //navigation properties 
         public List<Booking>? Bookings { get; set; }
-
+        public List<Event>? Events { get; set; }
 
     }
 }

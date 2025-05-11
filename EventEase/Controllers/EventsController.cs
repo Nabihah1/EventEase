@@ -49,48 +49,67 @@ namespace EventEase.Controllers
         }
 
         // GET: Events/Create
-        public IActionResult Create(Event AnotherEvent, Venue AnotherVenue)
+        public IActionResult Create()
         {
-            // Check if another event is already booked at the same venue and time
-            bool isVenueBooked = _context.Event.Any(e =>
-                e.EventDate == AnotherEvent.EventDate &&
-                e.StartTime < AnotherEvent.StartTime &&
-                e.EndTime > AnotherEvent.EndTime);
+            // Pass the list of venues to the view
+            ViewBag.Venues = _context.Venue.ToList();
+            return View();
 
-            bool isVenueBooked1 = _context.Venue.Any(v =>
-            v.VenueID == AnotherVenue.VenueID);
-
-            if (isVenueBooked && isVenueBooked1)
-            {
-                ModelState.AddModelError("", "This venue is already booked at the selected date and time.\nPlease select another venue or time.");
-               return View(AnotherEvent);
-            }
-            return View(AnotherEvent);
         }
+        
 
         // POST: Events/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("EventID,EventName,EventDate,StartTime,EndTime,EventDescription,EventImage")] Event @event,IFormFile image)
+        public async Task<IActionResult> Create([Bind("EventID,EventName,EventDate,StartTime,EndTime,EventDescription,EventImage")] Event @event,IFormFile image, int venueID)
         {
+ 
             if (ModelState.IsValid)
             {
 
+                // Check for conflicting bookings- prevents double booking 
+                var conflictingBooking = await _context.Booking
+                    .Include(b => b.Event)
+                    .Where(b => b.VenueID == venueID && b.Event.EventDate == @event.EventDate)
+                    .AnyAsync(b =>
+                        (@event.StartTime < b.Event.EndTime) && (b.Event.StartTime < @event.EndTime)
+                    );
+
+                if (conflictingBooking)
+                {
+                    ViewBag.Venues = _context.Venue.ToList(); // Re-populate ViewBag for return view
+                    ModelState.AddModelError("", "This venue is already booked for the selected date and time.\nPlease select another venue or a different time.");
+                    return View(@event); // prevent saving
+                }
+
+              
+           
                 if (image is { Length: > 0 })
                 {
                     var url = await _blobService.UploadFileAsync(image.OpenReadStream(),
                                                           Path.GetRandomFileName() + Path.GetExtension(image.FileName),
                                                           image.ContentType);
                     @event.EventImage = url;
+                } else
+                {
+                    ModelState.AddModelError("", "Upload an image.");
+                    ViewBag.Venues = _context.Venue.ToList();
+                    return View(@event);
                 }
+
+                @event.VenueID = venueID; // Link event to selected venue
+
+                //save the event 
                 _context.Add(@event);
                 await _context.SaveChangesAsync(); 
                 return RedirectToAction(nameof(Index));
             }
-               
-                return View(@event);
+
+            ViewBag.Venues = _context.Venue.ToList(); // Needed on error
+
+            return View(@event);
             }
         
 
