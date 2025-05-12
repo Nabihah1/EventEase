@@ -1,6 +1,6 @@
-﻿@model List<EventEase.Models.BookingViewModel>
+﻿@* @model List<EventEase.Models.BookingViewModel> *@
 @* @model EventEase.Models.BookingIdViewModel  *@
-@* @model IEnumerable<EventEase.Models.Booking> *@
+@model IEnumerable<EventEase.Models.Booking>
 
 
 
@@ -8,20 +8,14 @@
     ViewData["Title"] = "Bookings";
 }
 
-<h1>Index</h1>
+<h1>Booking</h1>
 
 <p>
     <a asp-action="Create">Create New</a>
 </p>
 
 <form asp-controller="Bookings" asp-action="Index" method="get">
-    <p>
-        <!--  Informational message above search string -->
-    <p><strong>Please enter the 'Booking ID' or 'Event Name' you would like to search for:</strong> </p>
 
-        Search: <input type="text" name="searchString" />
-        <input type="submit" value="Search" />
-    </p>
 
 </form>
 
@@ -29,29 +23,32 @@
 <table class="table">
     <thead>
         <tr>
-            <th>Booking ID</th>
             <th>Booking Date</th>
-            <th>Event Name</th>
-            <th>Event Description</th>
-            <th>Start Time</th>
-            <th> End Time</th>
-            <th>Venue Name</th>
-            <th>Venue Location</th>
-            <th></th>
+            <th>Event</th>
+            <th>Venue</th>
+     
         </tr>
     </thead>
     <tbody>
 @foreach (var item in Model) {
     
             <tr>
-                <td>@item.BookingID</td>
-                <td>@item.BookingDate</td>
-                <td>@item.EventName</td>
-                <td>@item.EventDescription</td>
-                <td>@item.StartTime</td>
-                <td>@item.EndTime</td>
-                <td>@item.VenueName</td>
-                <td>@item.VenueLocation</td>
+                <td>  @Html.DisplayFor(modelItem => item.BookingDate)</td>
+                
+                <td>  @Html.DisplayFor(modelItem => item.Event.EventDescription)</td>
+          
+                <td>  @Html.DisplayFor(modelItem => item.Venue.VenueName)</td>
+               
+              
+
+
+           
+
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.BookingID">Edit</a> |
+                    <a asp-action="Details" asp-route-id="@item.BookingID">Details</a> |
+                    <a asp-action="Delete" asp-route-id="@item.BookingID">Delete</a>
+                </td>
 
             </tr>
 

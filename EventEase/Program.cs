@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using EventEase.Data;
 using EventEase.Services;
 using EventEase.Models;
+using System.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -28,6 +29,21 @@ if (!app.Environment.IsDevelopment())
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
+
+//azure blob connection string storage 
+
+var builder = WebApplication.CreateBuilder(args);
+var configuration = builder.Configuration;
+
+var storageConnectionString = Environment.GetEnvironmentVariable("AZURE_STORAGE_CONNECTION_STRING");
+
+// Optional: fallback to appsettings.json if env variable is not set
+if (string.IsNullOrEmpty(storageConnectionString))
+{
+    storageConnectionString = configuration.GetSection("Storage")["ConnectionString"];
+}
+
+
 
 app.UseHttpsRedirection();
 app.UseRouting();

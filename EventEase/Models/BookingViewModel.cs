@@ -10,6 +10,7 @@
         // Event details
         public string? EventName { get; set; }
         public string? EventDescription { get; set; }
+        public DateOnly EventDate { get; set; }
         public TimeOnly StartTime { get; set; }
         public TimeOnly EndTime { get; set; }
 

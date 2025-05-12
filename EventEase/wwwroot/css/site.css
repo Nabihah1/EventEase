@@ -17,6 +17,12 @@ html {
   min-height: 100%;
 }
 
+.custom-navbar {
+    background-color:lightcoral;
+   
+}
+
+
 .home-background {
     background-image: url('../images/home background.png');
     background-size: cover;

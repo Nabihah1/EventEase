@@ -23,49 +23,21 @@ namespace EventEase.Controllers
           
 
         // GET: Bookings
-        public async Task<IActionResult> Index(int? BookingsID,string searchString)
+        public async Task<IActionResult> Index()
         {
             if (_context.Booking == null)
             {
                 return Problem("Entity set 'EventEase.Context.Booking'  is null.");
             }
 
-                      
-            // Include Venue name 
-            var bookings = _context.Booking
-                .Include(b => b.Event)
-                .Include (b => b.Venue)
-                .AsQueryable();
+            var booking = await _context.Booking
+           .Include(b => b.Event)
+           .Include(b => b.Venue)
+           .ToListAsync();
 
            
-            //filter by event name or bookingID 
-            if (!String.IsNullOrEmpty(searchString))
-            {
-                bookings = bookings.Where(b =>
-                b.Event != null && b.Event.EventName.Contains(searchString) ||
-                  b.BookingID.ToString().Contains(searchString));
-            }
 
-         
-
-            // Go to BookingViewModel
-            var bookingViewModels = await bookings
-                .Select(b => new BookingViewModel
-                {
-                    BookingID = b.BookingID,
-                    BookingDate = b.BookingDate,
-                    EventName = b.Event.EventName,
-                    EventDescription = b.Event.EventDescription,
-                    StartTime = b.Event.StartTime,
-                    EndTime = b.Event.EndTime,
-                    VenueName = b.Venue.VenueName,
-                    VenueLocation = b.Venue.VenueLocation,
-
-                   
-                }).ToListAsync();
-
-
-            return View(bookingViewModels);
+            return View(booking);
                         
         }
 
@@ -89,6 +61,7 @@ namespace EventEase.Controllers
                 .Include(b => b.Event)
                 .Include(b => b.Venue)
                 .FirstOrDefaultAsync(m => m.BookingID == id);
+
             if (booking == null)
             {
                 return NotFound();
