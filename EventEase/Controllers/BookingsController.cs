@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using EventEase.Data;
 using EventEase.Models;
+using Humanizer.Localisation;
 
 namespace EventEase.Controllers
 {
@@ -159,17 +160,49 @@ namespace EventEase.Controllers
                 return NotFound();
             }
 
+            //find the booking by its ID
             var booking = await _context.Booking
                 .Include(b => b.Event)
                 .Include(b => b.Venue)
                 .FirstOrDefaultAsync(m => m.BookingID == id);
+
             if (booking == null)
             {
                 return NotFound();
             }
 
-            return View(booking);
+            // Delete the booking
+            _context.Booking.Remove(booking);
+            await _context.SaveChangesAsync();
+
+            // After the booking is deleted, check if there are any remaining bookings for the venue or event 
+            var venueCheck = booking.Venue;
+            var eventCheck = booking.Event;
+
+            // Delete the venue if no more bookings are associated
+            bool venueHasOtherBookings = await _context.Booking
+                .AnyAsync(b => b.VenueID == venueCheck.VenueID);
+
+            if (!venueHasOtherBookings)
+            {
+                _context.Venue.Remove(venueCheck);
+                await _context.SaveChangesAsync();
+            }
+
+            // Delete the event if no more bookings are associated
+            bool eventHasOtherBookings = await _context.Booking
+                .AnyAsync(b => b.EventID == eventCheck.EventID);
+
+            if (!eventHasOtherBookings)
+            {
+                _context.Event.Remove(eventCheck);
+                await _context.SaveChangesAsync();
+            }
+
+            return RedirectToAction(nameof(Index));
         }
+
+        
 
         // POST: Bookings/Delete/5
         [HttpPost, ActionName("Delete")]

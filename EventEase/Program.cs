@@ -32,7 +32,7 @@ if (!app.Environment.IsDevelopment())
 
 //azure blob connection string storage 
 
-var builder = WebApplication.CreateBuilder(args);
+//var builderss = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
 
 var storageConnectionString = Environment.GetEnvironmentVariable("AZURE_STORAGE_CONNECTION_STRING");

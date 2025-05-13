@@ -188,7 +188,7 @@ namespace EventEase.Controllers
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             //check if any booking exists for an event
-            bool hasBooking = _context.Event.Any(b => b.EventID == id);
+            bool hasBooking = await _context.Booking.AnyAsync(b => b.EventID == id);
   
             if (hasBooking)
             {

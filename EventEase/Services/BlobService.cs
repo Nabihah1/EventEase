@@ -16,6 +16,10 @@ namespace EventEase.Services
             // appsettings.json -->storage --> has the connection string and container name 
             var connectionString = cfg["Storage:ConnectionString"];
             var containerName = cfg["Storage:Container"];
+
+            if (string.IsNullOrEmpty(connectionString) || string.IsNullOrEmpty(containerName))
+                throw new InvalidOperationException("Blob connection string or container name is missing.");
+
             _container = new BlobContainerClient(connectionString, containerName);
             _container.CreateIfNotExists(Azure.Storage.Blobs.Models.PublicAccessType.Blob);
         }

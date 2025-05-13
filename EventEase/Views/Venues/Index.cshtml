@@ -43,11 +43,14 @@
             <td>
                     @if (!string.IsNullOrEmpty(item.VenueImage))
                     {
-                        <a href="@item.VenueImage" target="_blank">@System.IO.Path.GetFileName(item.VenueImage)</a>
+                        <img src="@item.VenueImage" alt="Image" style="max-width: 200px; height:auto" />
+                        <br />
+                        <a href="@item.VenueImage" target="_blank">View Full Image</a>
                     }
                     else
                     {
-                        <span class="text-muted">No image</span>
+                        <span class="text-muted">No image available </span>
+
                     }
                    
             </td>

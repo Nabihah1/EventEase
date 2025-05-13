@@ -55,11 +55,14 @@
                
                     @if (!string.IsNullOrEmpty(item.EventImage))
                     {
-                        <a href="@item.EventImage" target="_blank">@System.IO.Path.GetFileName(item.EventImage)</a>
+                        <img src="@item.EventImage" alt="Image" style="max-width: 200px; height:auto" />
+                        <br/>
+                        <a href="@item.EventImage" target="_blank">View Full Image</a>
                     }
                     else
                     {
-                        <span class="text-muted">No image</span>
+                        <span class="text-muted">No image available </span>
+                       
                     }
 
                    </td>
