@@ -18,33 +18,97 @@ html {
 }
 
 .custom-navbar {
-    background-color:lightcoral;
+    background-color: lightskyblue;
    
 }
 
-
-.home-background {
-    background-image: url('../images/home background.png');
-    background-size: cover;
-    background-position: center;
-    height: 100vh; /* Full screen height */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-
+.hero {
+    text-align: center;
+    padding: 4rem 2rem;
+    /* Replace white background with subtle blue gradient */
+    background: linear-gradient(135deg, #e0f7fa, #b2ebf2);
 }
 
-.home-text{
-    text-align:center;
+.features {
+    display: flex;
+    justify-content: space-around;
+    padding: 3rem 2rem;
+    background: #fafafa;
+    text-align: center;
+}
+
+.about {
+    padding: 4rem 2rem;
+    background: linear-gradient(150deg, #d0e8ff, #90c7ff);
+    text-align: center;
+}
+
+.cta-footer {
+    background: #f0f2f5;
+    text-align: center;
+    padding: 2rem;
+}
+
+.btn.primary {
+    background-color: #1e90ff;
+    color: white;
+    padding: 0.7rem 1.2rem;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+
+.home-text {
+    font-family: 'Poppins', sans-serif;
+    text-align: center;
     color: black;
-    }
+}
+
 
 
     h1{
     font-family:'Lucida Calligraphy',sans-serif;
+    color: darkblue; 
 }
 
+h2 {
+    font-size: 2.2rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: #1e90ff;
+}
 
+.hero h2,
+.about h2 {
+    font-style: normal; /* Remove italic */
+}
+
+section {
+    padding: 3rem 2rem;
+}
+
+.features {
+    background-color: #f1f5f9;
+    display: flex;
+    justify-content: space-around;
+    text-align: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.feature-item {
+    width: 200px;
+    padding: 1rem;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+    transition: transform 0.3s ease;
+}
+
+    .feature-item:hover {
+        transform: scale(1.05);
+    }
 
 
 
@@ -83,3 +147,5 @@ html {
         margin-top: 10px;
         font-weight: 500;
     }
+
+

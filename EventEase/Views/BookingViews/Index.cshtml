@@ -16,23 +16,37 @@
 
     Search: <input type="text" name="searchString" />
     <input type="submit" value="Search" />
-    
-
 </form>
+
+@* 
+<form asp-action="EventType" method="get">
+    <select asp-for="EventTypeName" asp-items="Model.BookingViewModel" class="form-control">
+        <option value="">-- Select Event Type --</option>
+    </select>
+
+    <input type="date" asp-for="StartEventDate" class="form-control" />
+    <input type="date" asp-for="EndEventDate" class="form-control" />
+
+    <input type="submit" value="EventType" class="btn btn-primary" />
+</form>
+ *@
+
 
 
 <table class="table">
     <thead>
         <tr>
             <th>Booking ID</th>
-            <th>Booking Date</th>
+          @*   <th>Booking Date</th> *@
             <th>Event Name</th>
             <th>Event Description</th>
-            <th>Event Date</th>
+            <th>Start of Event</th>
+            <th>End of Event</th>
             <th>Start Time</th>
             <th> End Time</th>
             <th>Venue Name</th>
             <th>Venue Location</th>
+
             <th></th>
         </tr>
     </thead>
@@ -42,10 +56,11 @@
 
             <tr>
                 <td>@item.BookingID</td>
-                <td>@item.BookingDate</td>
+               @*  <td>@item.BookingDate</td> *@
                 <td>@item.EventName</td>
                 <td>@item.EventDescription</td>
-                <td>@item.EventDate</td>
+                <td>@item.StartEventDate</td>
+                <td>@item.EndEventDate</td>
                 <td>@item.StartTime</td>
                 <td>@item.EndTime</td>
                 <td>@item.VenueName</td>

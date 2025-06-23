@@ -1,7 +1,7 @@
 ﻿@model IEnumerable<EventEase.Models.Event>
 
 @{
-    ViewData["Title"] = "Events";
+    ViewData["Title"] = "Event ";
 }
 
 <h1>Events</h1>
@@ -16,7 +16,10 @@
                 @Html.DisplayNameFor(model => model.EventName)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.EventDate)
+                @Html.DisplayNameFor(model => model.StartEventDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.EndEventDate)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.StartTime)
@@ -30,6 +33,9 @@
             <th>
                 @Html.DisplayNameFor(model => model.EventImage)
             </th>
+            <th>
+                Event Type
+            </th>
             <th></th>
         </tr>
     </thead>
@@ -40,8 +46,11 @@
                 @Html.DisplayFor(modelItem => item.EventName)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.EventDate)
+                @Html.DisplayFor(modelItem => item.StartEventDate)
             </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.EndEventDate)
+                </td>
             <td>
                 @Html.DisplayFor(modelItem => item.StartTime)
             </td>
@@ -66,6 +75,11 @@
                     }
 
                    </td>
+
+                <td>
+                    @item.EventType?.EventTypeName
+                </td>
+
             <td>
                 <a asp-action="Edit" asp-route-id="@item.EventID">Edit</a> |
                 <a asp-action="Details" asp-route-id="@item.EventID">Details</a> |

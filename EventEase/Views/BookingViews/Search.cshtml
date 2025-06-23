@@ -1,0 +1,47 @@
+﻿@model EventEase.Models.BookingViewModel
+
+
+<h2>Search For Available Venues</h2>
+
+<form method="get" asp-action="Search">
+    <div class="form-group">
+        <label>Event Type:</label>
+        <select asp-for="EventTypeID" asp-items="Model.EventTypes" class="form-control">
+            <option value="">-- Select Type --</option>
+        </select>
+    </div>
+
+    @* <div class="form-group">
+        <label>Venue:</label>
+        <select asp-for="VenueID" asp-items="Model.Venues" class="form-control">
+            <option value="">-- Any Venue --</option>
+        </select>
+    </div> *@
+
+    <div class="form-group">
+        <label>Start Date:</label>
+        <input asp-for="FilterStartDate" type="date" class="form-control" />
+    </div>
+
+    <div class="form-group">
+        <label>End Date:</label>
+        <input asp-for="FilterEndDate" type="date" class="form-control" />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Search</button>
+</form>
+
+@if (Model?.AvailableVenues != null && Model.AvailableVenues.Any())
+{
+    <h3>Available Venues:</h3>
+    <ul>
+        @foreach (var venue in Model.AvailableVenues)
+        {
+            <li>@venue.VenueName - @venue.VenueLocation</li>
+        }
+    </ul>
+}
+else if (Model?.AvailableVenues != null)
+{
+    <p>No venues available for the selected filters.</p>
+}

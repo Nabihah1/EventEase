@@ -100,7 +100,7 @@ namespace EventEase.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("VenueID,VenueName,VenueLocation,VenueCapacity,VenueImage")] Venue venue)
+        public async Task<IActionResult> Edit(int id, [Bind("VenueID,VenueName,VenueLocation,VenueCapacity,VenueImage")] Venue venue, IFormFile? image)
         {
             if (id != venue.VenueID)
             {
@@ -111,6 +111,27 @@ namespace EventEase.Controllers
             {
                 try
                 {
+                    // Get the current venue from DB to check old image
+                    var existingVenue = await _context.Venue.AsNoTracking().FirstOrDefaultAsync(v => v.VenueID == venue.VenueID);
+
+                    if (image != null && image.Length > 0)
+                    {
+                        if (!string.IsNullOrEmpty(existingVenue?.VenueImage))
+                        {
+                            var oldBlobName = Path.GetFileName(new Uri(existingVenue.VenueImage).LocalPath);
+                            await _blobService.DeleteFileAsync(oldBlobName);
+                        }
+
+                        var newFileName = Path.GetRandomFileName() + Path.GetExtension(image.FileName);
+                        var newUrl = await _blobService.UploadFileAsync(image.OpenReadStream(), newFileName, image.ContentType);
+                        venue.VenueImage = newUrl;
+                    }
+                    else
+                    {
+                        // Keep existing image URL if no new image uploaded
+                        venue.VenueImage = existingVenue?.VenueImage;
+                    }
+
                     _context.Update(venue);
                     await _context.SaveChangesAsync();
                 }
@@ -166,7 +187,15 @@ namespace EventEase.Controllers
 
             var venueToActuallyDelete = await _context.Venue.FindAsync(id);
             if (venueToActuallyDelete != null)
+
             {
+                // Delete the blob image first (if exists)
+                if (!string.IsNullOrEmpty(venueToActuallyDelete.VenueImage))
+                {
+                    var blobName = Path.GetFileName(new Uri(venueToActuallyDelete.VenueImage).LocalPath);
+                    await _blobService.DeleteFileAsync(blobName);
+                }
+
                 _context.Venue.Remove(venueToActuallyDelete);
                 await _context.SaveChangesAsync();
             }

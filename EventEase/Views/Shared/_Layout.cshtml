@@ -3,11 +3,18 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - EventEase</title>
+
+    @* <title>@ViewData["Title"] - EventEase</title> *@
+
+    <title>@(ViewData["Title"] ?? "Default Title") - EventEase</title>
+        
     <script type="importmap"></script>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/EventEase.styles.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/homepage.css" />
+   @*  <!-- fancy font-->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet"> *@
 </head>
 <body >
       <header class="custom-header">
@@ -41,10 +48,22 @@
 
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="BookingViews" asp-action="Index">Summary</a>
+                          
                         </li>
-
-
                     </ul>
+
+                    <!-- RIGHT CORNER SEARCH BUTTON -->
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item">
+                            <a class="btn btn-outline-dark d-flex align-items-center" 
+                              asp-controller="BookingViews" asp-action="Search">
+                                <i class="fas fa-search me-2"></i> Search Available Venues
+                            </a>
+                        </li>
+                    </ul>
+
+
+
                 </div>
             </div>
         </nav>
@@ -55,9 +74,10 @@
         </main>
     </div>
 
+
     <footer class="border-top footer text-muted">
         <div class="container">
-            &copy; 2025 - EventEase | Call: +27 123 456 789 | eventeaseza@gmail.com
+            &copy; 2025 - EventEase 
         </div>
     </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>

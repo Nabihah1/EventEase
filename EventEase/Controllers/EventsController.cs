@@ -27,7 +27,11 @@ namespace EventEase.Controllers
         // GET: Events
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Event.ToListAsync());
+            var events = await _context.Event
+                .Include(e => e.EventType) // Includes EventType
+                .ToListAsync();
+
+            return View(events);
         }
 
         // GET: Events/Details/5
@@ -50,10 +54,14 @@ namespace EventEase.Controllers
 
         // GET: Events/Create
         public IActionResult Create()
-        {
-            // Pass the list of venues to the view
-            ViewBag.Venues = _context.Venue.ToList();
-            return View();
+        {            
+            // Populate dropdowns for Event Type and Venue
+            ViewBag.EventTypes = new SelectList(_context.EventType, "EventTypeID", "EventTypeName");
+            ViewBag.Venues = new SelectList(_context.Venue, "VenueID", "VenueName");
+            // Return a new Event model so @model isn't null in the view
+            return View(new Event());
+
+
 
         }
         
@@ -63,25 +71,41 @@ namespace EventEase.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("EventID,EventName,EventDate,StartTime,EndTime,EventDescription,EventImage")] Event @event,IFormFile image, int venueID)
+        public async Task<IActionResult> Create([Bind("EventID,EventName,StartEventDate,EndEventDate,StartTime,EndTime,EventDescription,EventImage,VenueID,EventTypeID")] Event @event,IFormFile image)
         {
- 
+            
+
+            if (@event == null)
+            {
+                ModelState.AddModelError("", "Event cannot be null");
+                ViewBag.Venues = new SelectList(_context.Venue, "VenueID", "VenueName");
+                ViewBag.EventTypes = new SelectList(_context.EventType, "EventTypeID", "EventTypeName");
+                return View(new Event());
+            }
+
+
+
+
             if (ModelState.IsValid)
             {
-
                 // Check for conflicting bookings- prevents double booking 
                 var conflictingBooking = await _context.Booking
                     .Include(b => b.Event)
-                    .Where(b => b.VenueID == venueID && b.Event.EventDate == @event.EventDate)
-                    .AnyAsync(b =>
-                        (@event.StartTime < b.Event.EndTime) && (b.Event.StartTime < @event.EndTime)
-                    );
+                    .AnyAsync(b => b.VenueID == @event.VenueID
+                    && b.Event != null
+                    && b.Event.StartEventDate == @event.StartEventDate
+                    && b.Event.EndEventDate == @event.EndEventDate
+                    && (@event.StartTime < b.Event.EndTime)
+                    && (b.Event.StartTime < @event.EndTime));
 
                 if (conflictingBooking)
-                {
-                    ViewBag.Venues = _context.Venue.ToList(); // Re-populate ViewBag for return view
+                {                
                     ModelState.AddModelError("", "This venue is already booked for the selected date and time.\nPlease select another venue or a different time.");
-                    return View(@event); // prevent saving
+                  // Re-populate ViewBag (drop downs) for return view
+                    ViewBag.Venues = new SelectList(_context.Venue, "VenueID", "VenueName", @event.VenueID);
+                    ViewBag.EventTypes = new SelectList(_context.EventType, "EventTypeID", "EventTypeName", @event.EventTypeID);
+
+                    return View(@event ?? new Event()); // prevent saving
                 }
 
               
@@ -94,23 +118,26 @@ namespace EventEase.Controllers
                     @event.EventImage = url;
                 } else
                 {
-                    ModelState.AddModelError("", "Upload an image.");
-                    ViewBag.Venues = _context.Venue.ToList();
-                    return View(@event);
+                    ModelState.AddModelError("", " Please Upload an image.");
+                    // Re-populate ViewBag (drop downs) for return vie
+                    ViewBag.Venues = new SelectList(_context.Venue, "VenueID", "VenueName", @event.VenueID);
+                    ViewBag.EventTypes = new SelectList(_context.EventType, "EventTypeID", "EventTypeName", @event.EventTypeID);
+                    return View(@event ?? new Event());
                 }
 
-                @event.VenueID = venueID; // Link event to selected venue
-
+               
                 //save the event 
                 _context.Add(@event);
                 await _context.SaveChangesAsync(); 
                 return RedirectToAction(nameof(Index));
             }
 
-            ViewBag.Venues = _context.Venue.ToList(); // Needed on error
 
-            return View(@event);
-            }
+            // Validation failed: reload dropdowns
+            ViewBag.EventTypes = new SelectList(_context.EventType, "EventTypeID", "EventTypeName");
+            ViewBag.Venues = new SelectList(_context.Venue, "VenueID", "VenueName");
+            return View(@event ?? new Event());
+        }
         
 
         // GET: Events/Edit/5
@@ -126,6 +153,8 @@ namespace EventEase.Controllers
             {
                 return NotFound();
             }
+            ViewBag.EventTypes = new SelectList(_context.EventType, "EventTypeID", "EventTypeName");
+            ViewBag.Venues = new SelectList(_context.Venue, "VenueID", "VenueName");
             return View(@event);
         }
 
@@ -134,7 +163,7 @@ namespace EventEase.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("EventID,EventName,EventDate,StartTime,EndTime,EventDescription,EventImage")] Event @event)
+        public async Task<IActionResult> Edit(int id, [Bind("EventID,EventName,StartEventDate,EndEventDate,StartTime,EndTime,EventDescription,EventImage,VenueID,EventTypeID")] Event @event, IFormFile? image)
         {
             if (id != @event.EventID)
             {
@@ -145,6 +174,33 @@ namespace EventEase.Controllers
             {
                 try
                 {
+                    // Get existing event from DB 
+                    var existingEvent = await _context.Event.AsNoTracking().FirstOrDefaultAsync(e => e.EventID == id);
+
+                    if (existingEvent == null)
+                        return NotFound();
+
+                    if (image != null && image.Length > 0)
+                    {
+                        // Delete old blob if exists
+                        if (!string.IsNullOrEmpty(existingEvent.EventImage))
+                        {
+                            var oldBlobName = Path.GetFileName(new Uri(existingEvent.EventImage).LocalPath);
+                            await _blobService.DeleteFileAsync(oldBlobName);
+                        }
+
+                        // Upload new image
+                        var newFileName = Path.GetRandomFileName() + Path.GetExtension(image.FileName);
+                        var newUrl = await _blobService.UploadFileAsync(image.OpenReadStream(), newFileName, image.ContentType);
+                        @event.EventImage = newUrl;
+                    }
+                    else
+                    {
+                        // Keep old image URL if no new image uploaded
+                        @event.EventImage = existingEvent.EventImage;
+                    }
+
+
                     _context.Update(@event);
                     await _context.SaveChangesAsync();
                 }
@@ -161,6 +217,10 @@ namespace EventEase.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
+
+            // Re-populate dropdowns if validation fails
+            ViewBag.EventTypes = new SelectList(_context.EventType, "EventTypeID", "EventTypeName");
+            ViewBag.Venues = new SelectList(_context.Venue, "VenueID", "VenueName");
             return View(@event);
         }
 
@@ -201,6 +261,14 @@ namespace EventEase.Controllers
             var eventToActuallyDelete = await _context.Event.FindAsync(id);
             if (eventToActuallyDelete != null)
             {
+                // Delete blob image if exists
+                if (!string.IsNullOrEmpty(eventToActuallyDelete.EventImage))
+                {
+                    var blobName = Path.GetFileName(new Uri(eventToActuallyDelete.EventImage).LocalPath);
+                    await _blobService.DeleteFileAsync(blobName);
+                }
+
+
                 _context.Event.Remove(eventToActuallyDelete);
                 await _context.SaveChangesAsync();
             }

@@ -5,14 +5,12 @@ namespace EventEase.Models
     public class Event
     {
         [Key]
-
-
         [Display(Name = "Event ID")]
         [DataType(DataType.Text)]
         public int EventID { get; set; }
 
         //foreign key
-        //[Required]
+        [Required]
         //[Display(Name = "Venue ID")]
         //[DataType(DataType.Text)]
         public int? VenueID { get; set; }
@@ -27,10 +25,17 @@ namespace EventEase.Models
 
 
 
-        [Display(Name = "Date of Event")]
+        [Display(Name = "Start Date of Event")]
         [DataType(DataType.Date)]
         [Required]
-        public DateOnly EventDate { get; set; }
+        public DateOnly StartEventDate { get; set; }
+
+
+        [Display(Name = "End Date of Event")]
+        [DataType(DataType.Date)]
+        [Required]
+        public DateOnly EndEventDate { get; set; }
+
 
 
 
@@ -58,9 +63,15 @@ namespace EventEase.Models
         [Display(Name = "Image")]
         public string? EventImage { get; set; }
 
+        //add foreign key for event type 
+        [Display(Name = "Event Type ID")]
+        [DataType(DataType.Text)]
+        public int EventTypeID { get; set; }
 
+       
         //navigation properties
         public List<Booking>? Bookings { get; set; }
         public Venue? Venue { get; set; }
+        public EventType? EventType { get; set; }
     }
 }

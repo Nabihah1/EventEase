@@ -5,6 +5,9 @@ namespace EventEase.Services
     public interface IBlobService
     {
         Task<string> UploadFileAsync(Stream file, string fileName, string contentType);
+        Task<Stream> DownloadFileAsync(string fileName);
+
+        Task DeleteFileAsync(string fileName);
     }
 
     public class BlobService : IBlobService
@@ -31,5 +34,23 @@ namespace EventEase.Services
             await blob.UploadAsync(file, new Azure.Storage.Blobs.Models.BlobHttpHeaders { ContentType = contentType });
             return blob.Uri.ToString(); 
         }
+
+
+        public async Task<Stream> DownloadFileAsync(string fileName)
+        {
+            var blob = _container.GetBlobClient(fileName);
+            var response = await blob.DownloadAsync();
+            return response.Value.Content;
+        }
+
+        public async Task DeleteFileAsync(string fileName)
+        {
+            var blob = _container.GetBlobClient(fileName);
+            await blob.DeleteIfExistsAsync();
+        }
+
+
+
+
     }
 }

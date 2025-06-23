@@ -4,6 +4,7 @@ using EventEase.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EventEase.Migrations
 {
     [DbContext(typeof(EventEaseContext))]
-    partial class EventEaseContextModelSnapshot : ModelSnapshot
+    [Migration("20250601154656_addEventType")]
+    partial class addEventType
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -56,11 +59,11 @@ namespace EventEase.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("EventID"));
 
-                    b.Property<DateOnly>("EndEventDate")
-                        .HasColumnType("date");
-
                     b.Property<TimeOnly>("EndTime")
                         .HasColumnType("time");
+
+                    b.Property<DateOnly>("EventDate")
+                        .HasColumnType("date");
 
                     b.Property<string>("EventDescription")
                         .IsRequired()
@@ -78,13 +81,10 @@ namespace EventEase.Migrations
                     b.Property<int>("EventTypeID")
                         .HasColumnType("int");
 
-                    b.Property<DateOnly>("StartEventDate")
-                        .HasColumnType("date");
-
                     b.Property<TimeOnly>("StartTime")
                         .HasColumnType("time");
 
-                    b.Property<int>("VenueID")
+                    b.Property<int?>("VenueID")
                         .HasColumnType("int");
 
                     b.HasKey("EventID");
@@ -112,38 +112,6 @@ namespace EventEase.Migrations
                     b.HasKey("EventTypeID");
 
                     b.ToTable("EventType");
-
-                    b.HasData(
-                        new
-                        {
-                            EventTypeID = 1,
-                            EventTypeName = "Wedding"
-                        },
-                        new
-                        {
-                            EventTypeID = 2,
-                            EventTypeName = "Baby Shower"
-                        },
-                        new
-                        {
-                            EventTypeID = 3,
-                            EventTypeName = "Birthday"
-                        },
-                        new
-                        {
-                            EventTypeID = 4,
-                            EventTypeName = "Conference"
-                        },
-                        new
-                        {
-                            EventTypeID = 5,
-                            EventTypeName = "Reunion"
-                        },
-                        new
-                        {
-                            EventTypeID = 6,
-                            EventTypeName = "Graduation"
-                        });
                 });
 
             modelBuilder.Entity("EventEase.Models.Venue", b =>
@@ -205,8 +173,7 @@ namespace EventEase.Migrations
                     b.HasOne("EventEase.Models.Venue", "Venue")
                         .WithMany("Events")
                         .HasForeignKey("VenueID")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("EventType");
 

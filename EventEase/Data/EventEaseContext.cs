@@ -17,6 +17,7 @@ namespace EventEase.Data
         public DbSet<EventEase.Models.Event> Event { get; set; } = default!;
         public DbSet<EventEase.Models.Venue> Venue { get; set; } = default!;
         public DbSet<EventEase.Models.Booking> Booking { get; set; } = default!;
+        public DbSet<EventEase.Models.EventType> EventType { get; set; } = default!; 
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -31,6 +32,20 @@ namespace EventEase.Data
         .WithMany(v => v.Events) // A Venue can have many Events
         .HasForeignKey(e => e.VenueID)  // Foreign key on Event
         .OnDelete(DeleteBehavior.Restrict); // Specify no cascade on delete
+
+
+            //add seeded data for the event type - this options will show up when user selects types of event 
+            modelBuilder.Entity<EventType>().HasData(
+                new EventType { EventTypeID = 1, EventTypeName = "Wedding"},
+                   new EventType { EventTypeID = 2, EventTypeName = "Baby Shower" },
+                      new EventType { EventTypeID = 3, EventTypeName = "Birthday" },
+                         new EventType { EventTypeID = 4, EventTypeName = "Conference" },
+                            new EventType { EventTypeID = 5, EventTypeName = "Reunion" },
+                               new EventType { EventTypeID = 6, EventTypeName = "Graduation" }
+
+                ); 
+
+
         }
 
 
